@@ -7,14 +7,22 @@ mod vector;
 
 use crate::{camera::Camera, vector::Vec3};
 use regex::Regex;
-use std::{env::current_dir, fs::File, io::prelude::*, path::Path};
+use std::{
+    env::{args, current_dir},
+    fs::File,
+    io::prelude::*,
+    path::Path,
+};
+
+fn parse_args() -> (Option<String>, usize, usize) {
+    let mut a = args();
+    (a.nth(1), 1024, 1024)
+}
 
 fn main() {
-    // let re = Regex::new(r"(v|f|vn|vt)\s+(.+)").unwrap();
-    // let cap = re.captures("v 34.4 12 -45");
-    parser::parse("obj/cyl.obj");
-    // let v = Vec3::new(12., -4., 8.);
-    // let c = Camera{ pos: Vec3::dummy(), dir: Vec3::dummy(), fov: 60. };
-    // println!("{}", v.clone().len());
-    // println!("{}", v.clone() + v);
+    let (filename, ..) = parse_args();
+    parser::parse(match filename {
+        Some(f) => f,
+        None => "obj/cyl.obj".to_owned(),
+    });
 }

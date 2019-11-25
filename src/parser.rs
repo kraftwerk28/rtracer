@@ -37,7 +37,7 @@ impl WavefrontObj {
     }
 }
 
-pub fn parse(filename: &str) -> WavefrontObj {
+pub fn parse(filename: String) -> WavefrontObj {
     let f_path = Path::new(current_dir().unwrap().as_os_str()).join(filename);
     let f = std::fs::File::open(f_path).unwrap();
     let br = BufReader::new(f);
