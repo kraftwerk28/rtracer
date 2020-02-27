@@ -1,12 +1,14 @@
-#![allow(dead_code, unused_imports)]
-mod camera;
+#![allow(dead_code, unused_imports, unused_variables)]
 mod geometry;
 mod parser;
-mod tests;
 mod vector;
+mod tracer;
 
-use crate::{camera::Camera, vector::Vec3};
-use regex::Regex;
+mod vector_test;
+
+use crate::vector::Vec3;
+use std::collections::{LinkedList};
+// use regex::Regex;
 use std::{
     env::{args, current_dir},
     fs::File,
@@ -14,15 +16,22 @@ use std::{
     path::Path,
 };
 
+use parser::*;
+
 fn parse_args() -> (Option<String>, usize, usize) {
     let mut a = args();
     (a.nth(1), 1024, 1024)
 }
 
 fn main() {
-    let (filename, ..) = parse_args();
-    parser::parse(match filename {
+    let (filename, width, height) = parse_args();
+    let parsed = WavefrontObj::parse(match filename {
         Some(f) => f,
         None => "obj/cyl.obj".to_owned(),
-    });
+    })
+    .unwrap();
+    print!(
+        "Parsing finished. {:?} vertices; {:?} faces.",
+        parsed.verts, parsed.faces
+    );
 }

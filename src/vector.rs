@@ -1,16 +1,19 @@
 use num::traits::{Float, PrimInt as Int, Zero};
 use std::cmp::{Eq, PartialEq};
 use std::fmt::{Debug, Display, Formatter, Result};
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Vec3<T = f64> {
     pub x: T,
     pub y: T,
     pub z: T,
 }
 
-impl<T: Float> Vec3<T> {
+impl<T: Float> Vec3<T>
+where
+    T: Float + Display,
+{
     pub fn new(x: T, y: T, z: T) -> Self {
         Self { x, y, z }
     }
@@ -32,13 +35,14 @@ impl<T: Float> Vec3<T> {
         Float::sqrt(self.x.powi(2) + self.y.powi(2) + self.z.powi(2))
     }
     pub fn dot(self, v: Vec3<T>) -> T {
-        self.x * v.x + self.y + v.y + self.z * v.z
+        self.x * v.x + self.y * v.y + self.z * v.z
     }
-    pub fn vec_prod(a: Self, b: Self) -> Self {
-        let x = a.y * b.z - a.z * b.y;
-        let y = a.z * b.x - a.x * b.z;
-        let z = a.x * b.y - a.y * b.x;
-        Self { x, y, z }
+    pub fn cross(a: Self, b: Self) -> Self {
+        Self {
+            x: a.y * b.z - a.z * b.y,
+            y: a.z * b.x - a.x * b.z,
+            z: a.x * b.y - a.y * b.x,
+        }
     }
     pub fn norm(&self) -> Self {
         let l = self.len();
@@ -47,6 +51,12 @@ impl<T: Float> Vec3<T> {
             y: self.y / l,
             z: self.z / l,
         }
+    }
+}
+
+impl<T: Int> Vec3<T> {
+    pub fn new_int(x: T, y: T, z: T) -> Self {
+        Self { x, y, z }
     }
 }
 
@@ -94,15 +104,29 @@ impl<T: Float> Div<T> for Vec3<T> {
     }
 }
 
-impl Display for Vec3<f64> {
-    fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "( x = {}, y = {}, z = {})", self.x, self.y, self.z)
+impl<T: Float> Neg for Vec3<T> {
+    type Output = Self;
+    fn neg(self) -> Self {
+        Vec3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
     }
 }
 
-impl Debug for Vec3<f64> {
+impl Display for Vec3<f64> {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "( x = {}, y = {}, z = {})", self.x, self.y, self.z)
+        write!(f, "({}, {}, {})", self.x, self.y, self.z)
+    }
+}
+
+impl<T> Debug for Vec3<T>
+where
+    T: Float + Display,
+{
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "( x = {}, y = {}, z = {} )", self.x, self.y, self.z)
     }
 }
 
